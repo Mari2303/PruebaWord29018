@@ -26,19 +26,21 @@ namespace Business.Implements
     public class UserBusiness : BaseBusiness<User, UserDto>, IUserBusiness
     {
         private readonly IUserData _userData;
-        private readonly IEmailService _emailService;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly AppSettings _appSettings;
 
-        public UserBusiness(IUserData userData, IMapper mapper, ILogger<UserBusiness> logger, IGenericIHelpers helpers, IEmailService emailService, IJwtGenerator jwtGenerator,
+        public UserBusiness(IUserData userData, IMapper mapper, ILogger<UserBusiness> logger, IGenericIHelpers helpers, IJwtGenerator jwtGenerator,
             IOptions<AppSettings> appSettings)
             : base(userData, mapper, logger, helpers)
         {
             _userData = userData;
-            _emailService = emailService;
             _jwtGenerator = jwtGenerator;
             _appSettings = appSettings.Value;
         }
+
+    // ... resto del código ...
+
+
 
         ///<summary>
         /// Obtiene un usuario por su dirección de correo electrónico.
