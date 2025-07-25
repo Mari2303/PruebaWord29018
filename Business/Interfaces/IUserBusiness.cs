@@ -17,7 +17,7 @@ namespace Business.Interfaces
         /// <returns>
         /// El <see cref="User"/> que coincida con el correo proporcionado o <c>null</c> si no se encuentra.
         /// </returns>
-        Task<User> GetByEmailAsync(string email);
+      
 
         /// <summary>
         /// Valida las credenciales de un usuario comparando el correo y la contraseña.
@@ -56,7 +56,7 @@ namespace Business.Interfaces
         ///</summary>
         /// <param name="dto">Objeto que contiene el ID del usuario, la contraseña actual y la nueva contraseña.</param>
         /// <returns> True si la contraseña se cambió correctamente; false si el usuario no existe o la contraseña actual no coincide.</returns>
-        Task<bool> ChangePasswordAsync(UpdatePasswordUserDto dto);
+       
 
         ///<summary>
         /// Asigna un rol a un usuario específico.
@@ -71,14 +71,13 @@ namespace Business.Interfaces
         /// <param name="emailDestino">Dirección de correo electrónico del destinatario.</param>
         /// <param name="nombre">Nombre del usuario para personalizar el mensaje.</param>
         /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        Task NotificarUsuarioAsync(string emailDestino, string nombre);
-
+      
         /// <summary>
         /// Envía un correo electrónico con un enlace para restablecer la contraseña del usuario.
         /// </summary>
         /// <param name="email">Dirección de correo electrónico del usuario que solicita recuperar su contraseña.</param>
         /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        Task EnviarCorreoRecuperacionAsync(string email);
+       
 
 
     }

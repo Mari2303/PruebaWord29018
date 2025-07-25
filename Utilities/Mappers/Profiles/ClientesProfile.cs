@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Entity.Dtos.ClientesDTO;
 using Entity.Dtos.PizzasDTO;
 using Entity.Model;
 
@@ -14,7 +15,7 @@ namespace Utilities.Mappers.Profiles
         public ClientesProfile()
         {
           
-            CreateMap<Clientes, PizzasDTO>().ReverseMap();
+            CreateMap<Clientes, ClientesDTO>().ReverseMap();
         }
     }
 }

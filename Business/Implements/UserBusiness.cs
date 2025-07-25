@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Entity.Dtos.RolUserDTO;
 using Entity.Dtos.UserDTO;
 using Entity.Model;
+using Lucene.Net.Support;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Utilities.Exceptions;
@@ -168,82 +169,5 @@ namespace Business.Implements
         }
 
 
-        /// <summary>
-        /// Notifica al usuario mediante correo electrónico sobre la creación de su cuenta.
-        /// </summary>
-        /// <param name="emailDestino">Dirección de correo electrónico del destinatario.</param>
-        /// <param name="nombre">Nombre del usuario para personalizar el mensaje.</param>
-        /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        /// <exception cref="Exception">Se lanza cuando el envío del correo falla.</exception>
-        public async Task NotificarUsuarioAsync(string emailDestino, string nombre)
-        {
-
-            string asunto = "Bienvenido al sistema";
-            string cuerpo = $"Hola {nombre}, tu cuenta ha sido creada con éxito.";
-
-            _logger.LogInformation($"Enviando correo de notificación a {emailDestino}");
-
-            bool enviado = await _emailService.SendEmailAsync(emailDestino, asunto, cuerpo);
-            if (!enviado)
-            {
-                _logger.LogError($"Error al enviar correo de notificación a {emailDestino}");
-                throw new Exception("No se pudo enviar el correo de notificación.");
-            }
-
-            _logger.LogInformation($"Correo de notificación enviado exitosamente a {emailDestino}");
-        }
-
-        /// <summary>
-        /// Envía un correo electrónico con un enlace para restablecer la contraseña del usuario.
-        /// </summary>
-        /// <param name="email">Dirección de correo electrónico del usuario que solicita recuperar su contraseña.</param>
-        /// <returns>Una tarea que representa la operación asíncrona.</returns>
-        /// <exception cref="EntityNotFoundException">Se lanza cuando no se encuentra el usuario con el correo proporcionado o cuando está inactivo.</exception>
-        /// <exception cref="Exception">Se lanza cuando el envío del correo falla.</exception>
-        public async Task EnviarCorreoRecuperacionAsync(string email)
-        {
-            // Verificamos que el email no esté vacío
-            if (string.IsNullOrWhiteSpace(email))
-                throw new ValidationException("email", "La dirección de correo electrónico no puede estar vacía.");
-
-            // Buscamos al usuario por su correo electrónico
-            var usuario = await _userData.GetByEmailAsync(email);
-
-            // Verificamos que el usuario exista y esté activo
-            if (usuario == null || !usuario.Status)
-                throw new EntityNotFoundException("Usuario", email);
-
-            // Generamos un token JWT con expiración de 15 minutos para el restablecimiento de contraseña
-            string token = _jwtGenerator.GenerarTokenRecuperacion(usuario);
-
-            // Creamos el enlace que el usuario deberá seguir para restablecer su contraseña
-            string resetLink = $"{_appSettings.ResetPasswordBaseUrl}?token={token}";
-
-            _logger.LogInformation($"Generando enlace de recuperación de contraseña para {email}");
-
-            // Preparamos el asunto y cuerpo del correo electrónico
-            // El cuerpo utiliza formato HTML para mejor presentación
-            string subject = "Restablecimiento de contraseña";
-            string body = $@"
-        <p>Haz clic en el siguiente enlace para cambiar tu contraseña:</p>
-        <p><a href='{resetLink}' target='_blank'>Restablecer contraseña</a></p>
-        <p>Este enlace expirará en 15 minutos por razones de seguridad.</p>
-        <p>Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
-        <p>Saludos,<br>El equipo de tu aplicación</p>";
-
-            // Enviamos el correo con formato HTML habilitado
-            _logger.LogInformation($"Enviando correo de recuperación a {email}");
-            bool enviado = await _emailService.SendEmailAsync(email, subject, body, isHtml: true);
-
-            // Verificamos si el envío fue exitoso
-            if (!enviado)
-            {
-                _logger.LogError($"Error al enviar correo de recuperación a {email}");
-                throw new Exception("No se pudo enviar el correo de recuperación.");
-            }
-
-            _logger.LogInformation($"Correo de recuperación enviado exitosamente a {email}");
-        }
     }
-
 }
